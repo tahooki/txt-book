@@ -74,7 +74,7 @@ export default function Reader({ text }: { text: string }) {
     }
 
     if (nextPages.length === 0) {
-      nextPages.push(\"\");
+      nextPages.push("");
     }
 
     setPages(nextPages);
