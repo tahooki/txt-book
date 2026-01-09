@@ -27,8 +27,8 @@ export default function Reader({ text }: { text: string }) {
     return text.replace(/\r\n/g, "\n").trim();
   }, [text]);
 
-  const tokens = useMemo(() => {
-    return normalized.split(/(\s+)/).filter((token) => token.length > 0);
+  const paragraphs = useMemo(() => {
+    return normalized.split(/\n{2,}/).map((para) => para.trim());
   }, [normalized]);
 
   useEffect(() => {
@@ -85,17 +85,13 @@ export default function Reader({ text }: { text: string }) {
     const nextPages: string[] = [];
     let current = "";
 
-    for (const token of tokens) {
-      if (!current && /^\s+$/.test(token)) {
-        continue;
-      }
-
-      const next = current + token;
+    for (const para of paragraphs) {
+      const next = current ? `${current}\n\n${para}` : para;
       measure.textContent = next;
 
       if (measure.scrollHeight > height && current) {
         nextPages.push(current);
-        current = /^\s+$/.test(token) ? "" : token;
+        current = para;
       } else {
         current = next;
       }
@@ -125,7 +121,7 @@ export default function Reader({ text }: { text: string }) {
       }
       return next;
     });
-  }, [fontSize, tokens]);
+  }, [fontSize, paragraphs]);
 
   useLayoutEffect(() => {
     computePages();
