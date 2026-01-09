@@ -23,8 +23,8 @@ export default function Reader({ text }: { text: string }) {
     return text.replace(/\r\n/g, "\n").trim();
   }, [text]);
 
-  const paragraphs = useMemo(() => {
-    return normalized.split(/\n{2,}/).map((para) => para.trim());
+  const tokens = useMemo(() => {
+    return normalized.split(/(\s+)/).filter((token) => token.length > 0);
   }, [normalized]);
 
   useEffect(() => {
@@ -57,13 +57,17 @@ export default function Reader({ text }: { text: string }) {
     const nextPages: string[] = [];
     let current = "";
 
-    for (const para of paragraphs) {
-      const next = current ? `${current}\n\n${para}` : para;
+    for (const token of tokens) {
+      if (!current && /^\s+$/.test(token)) {
+        continue;
+      }
+
+      const next = current + token;
       measure.textContent = next;
 
       if (measure.scrollHeight > height && current) {
         nextPages.push(current);
-        current = para;
+        current = /^\s+$/.test(token) ? "" : token;
       } else {
         current = next;
       }
@@ -79,7 +83,7 @@ export default function Reader({ text }: { text: string }) {
 
     setPages(nextPages);
     setPageIndex((prev) => Math.min(prev, Math.max(0, nextPages.length - 1)));
-  }, [fontSize, paragraphs]);
+  }, [fontSize, tokens]);
 
   useLayoutEffect(() => {
     computePages();
@@ -93,6 +97,11 @@ export default function Reader({ text }: { text: string }) {
     observer.observe(container);
 
     return () => observer.disconnect();
+  }, [computePages]);
+
+  useEffect(() => {
+    if (!("fonts" in document)) return;
+    document.fonts.ready.then(() => computePages());
   }, [computePages]);
 
   const handleDoubleClick = (event: React.MouseEvent<HTMLDivElement>) => {
