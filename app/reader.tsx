@@ -19,7 +19,9 @@ export default function Reader({ text }: { text: string }) {
   const pageRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
+  const footerRef = useRef<HTMLDivElement>(null);
   const initialPageRef = useRef<number | null>(null);
+  const lastPagesRef = useRef<string[]>([]);
 
   const normalized = useMemo(() => {
     return text.replace(/\r\n/g, "\n").trim();
@@ -57,13 +59,23 @@ export default function Reader({ text }: { text: string }) {
   }, [pageIndex]);
 
   const computePages = useCallback(() => {
-    const container = contentRef.current;
+    const page = pageRef.current;
     const measure = measureRef.current;
-    if (!container || !measure) return;
+    if (!page || !measure) return;
 
-    const height = container.clientHeight;
-    const width = container.clientWidth;
-    if (height === 0 || width === 0) return;
+    const styles = window.getComputedStyle(page);
+    const paddingY =
+      Number.parseFloat(styles.paddingTop) +
+      Number.parseFloat(styles.paddingBottom);
+    const paddingX =
+      Number.parseFloat(styles.paddingLeft) +
+      Number.parseFloat(styles.paddingRight);
+    const rowGap = Number.parseFloat(styles.rowGap || "0");
+    const footerHeight = footerRef.current?.offsetHeight ?? 0;
+    const height = page.clientHeight - paddingY - rowGap - footerHeight;
+    const width = page.clientWidth - paddingX;
+
+    if (height <= 0 || width <= 0) return;
 
     measure.style.width = `${width}px`;
     measure.style.fontSize = `${fontSize}px`;
@@ -97,6 +109,13 @@ export default function Reader({ text }: { text: string }) {
       nextPages.push("");
     }
 
+    const previous = lastPagesRef.current;
+    const isSame =
+      previous.length === nextPages.length &&
+      previous.every((value, index) => value === nextPages[index]);
+    if (isSame) return;
+
+    lastPagesRef.current = nextPages;
     setPages(nextPages);
     setPageIndex((prev) => {
       const target = initialPageRef.current ?? prev;
@@ -113,11 +132,11 @@ export default function Reader({ text }: { text: string }) {
   }, [computePages]);
 
   useEffect(() => {
-    const container = contentRef.current;
-    if (!container) return;
+    const page = pageRef.current;
+    if (!page) return;
 
     const observer = new ResizeObserver(() => computePages());
-    observer.observe(container);
+    observer.observe(page);
 
     return () => observer.disconnect();
   }, [computePages]);
@@ -186,7 +205,7 @@ export default function Reader({ text }: { text: string }) {
               {currentPage || "Loading..."}
             </div>
           </div>
-          <div className="reader-footer">
+          <div className="reader-footer" ref={footerRef}>
             <span className="reader-hint">Dbl click left/right</span>
             <span className="reader-page-count">
               {pages.length === 0 ? "-" : `${pageIndex + 1} / ${pages.length}`}
