@@ -54,14 +54,17 @@ body::before {
 }
 
 .reader-shell {
-  min-height: 100%;
+  min-height: 100dvh;
   display: flex;
   justify-content: center;
+  align-items: stretch;
   padding: 32px;
 }
 
 .reader-card {
   width: min(980px, 100%);
+  height: calc(100dvh - 64px);
+  max-height: 900px;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -253,6 +256,7 @@ body::before {
 
   .reader-card {
     padding: 18px;
+    height: calc(100dvh - 40px);
   }
 }
 
@@ -263,6 +267,7 @@ body::before {
 
   .reader-card {
     padding: 14px;
+    height: calc(100dvh - 28px);
   }
 
   .reader-page {
