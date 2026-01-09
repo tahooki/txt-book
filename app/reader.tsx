@@ -130,16 +130,6 @@ export default function Reader({ text }: { text: string }) {
   }, [computePages]);
 
   useEffect(() => {
-    const page = pageRef.current;
-    if (!page) return;
-
-    const observer = new ResizeObserver(() => computePages());
-    observer.observe(page);
-
-    return () => observer.disconnect();
-  }, [computePages]);
-
-  useEffect(() => {
     if (!("fonts" in document)) return;
     document.fonts.ready.then(() => computePages());
   }, [computePages]);
