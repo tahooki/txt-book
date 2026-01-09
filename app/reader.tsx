@@ -70,11 +70,13 @@ export default function Reader({ text }: { text: string }) {
     const paddingX =
       Number.parseFloat(styles.paddingLeft) +
       Number.parseFloat(styles.paddingRight);
-    const rowGap = Number.parseFloat(styles.rowGap || "0");
+    const rawGap = Number.parseFloat(styles.rowGap || "0");
+    const rowGap = Number.isNaN(rawGap) ? 0 : rawGap;
     const footerHeight = footerRef.current?.offsetHeight ?? 0;
     const height = page.clientHeight - paddingY - rowGap - footerHeight;
     const width = page.clientWidth - paddingX;
 
+    if (!Number.isFinite(height) || !Number.isFinite(width)) return;
     if (height <= 0 || width <= 0) return;
 
     measure.style.width = `${width}px`;

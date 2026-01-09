@@ -191,10 +191,21 @@ body::before {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   font-size: 11px;
+  line-height: 1;
   letter-spacing: 0.16em;
   text-transform: uppercase;
   color: var(--muted);
+  white-space: nowrap;
+  flex-wrap: nowrap;
+  height: 18px;
+  min-height: 18px;
+}
+
+.reader-hint,
+.reader-page-count {
+  white-space: nowrap;
 }
 
 .reader-measure {
