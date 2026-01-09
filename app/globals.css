@@ -1,0 +1,274 @@
+:root {
+  --bg-top: #f8f1e6;
+  --bg-bottom: #e7d3bf;
+  --paper: #fbf4ea;
+  --paper-deep: #f2e4d4;
+  --ink: #1f1a16;
+  --muted: #7a6a59;
+  --accent: #b06a2d;
+  --border: #dcc7b2;
+  --shadow: rgba(36, 26, 18, 0.18);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  color: var(--ink);
+  font-family: var(--font-body), "Nanum Myeongjo", serif;
+  background:
+    radial-gradient(1200px 600px at 10% -10%, #fff6e8 0%, transparent 70%),
+    radial-gradient(900px 520px at 100% 0%, #f7e1cd 0%, transparent 70%),
+    linear-gradient(180deg, var(--bg-top) 0%, var(--bg-bottom) 100%);
+  overflow: hidden;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(
+      0deg,
+      rgba(255, 255, 255, 0.2) 0,
+      rgba(255, 255, 255, 0.2) 1px,
+      transparent 1px,
+      transparent 7px
+    ),
+    repeating-linear-gradient(
+      90deg,
+      rgba(0, 0, 0, 0.03) 0,
+      rgba(0, 0, 0, 0.03) 1px,
+      transparent 1px,
+      transparent 14px
+    );
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.reader-shell {
+  min-height: 100%;
+  display: flex;
+  justify-content: center;
+  padding: 32px;
+}
+
+.reader-card {
+  width: min(980px, 100%);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  background: linear-gradient(180deg, #fff8ef 0%, #f4e6d7 100%);
+  border: 1px solid var(--border);
+  border-radius: 28px;
+  padding: 22px;
+  box-shadow: 0 22px 60px var(--shadow);
+  position: relative;
+  overflow: hidden;
+  animation: riseIn 0.7s ease both;
+}
+
+.reader-card::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  pointer-events: none;
+}
+
+.reader-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.reader-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.reader-title {
+  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-size: 20px;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+}
+
+.reader-subtitle {
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.reader-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--paper-deep);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 6px 12px;
+}
+
+.reader-button {
+  border: none;
+  background: var(--ink);
+  color: var(--paper);
+  width: 36px;
+  height: 36px;
+  border-radius: 999px;
+  font-family: var(--font-display), "Cormorant Garamond", serif;
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+}
+
+.reader-button:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 16px rgba(31, 26, 22, 0.2);
+}
+
+.reader-button:disabled {
+  cursor: not-allowed;
+  background: #cbb9a6;
+  box-shadow: none;
+  transform: none;
+}
+
+.reader-size {
+  min-width: 54px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.reader-page {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 18px;
+  border-radius: 22px;
+  background: linear-gradient(180deg, #fffaf2 0%, #f5e8d9 100%);
+  border: 1px solid var(--border);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.4);
+  cursor: ew-resize;
+  position: relative;
+}
+
+.reader-content {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.reader-text {
+  white-space: pre-wrap;
+  line-height: 1.9;
+  letter-spacing: 0.01em;
+  word-break: keep-all;
+  font-family: var(--font-body), "Nanum Myeongjo", serif;
+  animation: pageIn 0.35s ease both;
+}
+
+.reader-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 11px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.reader-measure {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+  width: 0;
+  white-space: pre-wrap;
+  line-height: 1.9;
+  letter-spacing: 0.01em;
+  word-break: keep-all;
+  font-family: var(--font-body), "Nanum Myeongjo", serif;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+@keyframes riseIn {
+  from {
+    transform: translateY(20px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes pageIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 900px) {
+  .reader-shell {
+    padding: 20px;
+  }
+
+  .reader-card {
+    padding: 18px;
+  }
+}
+
+@media (max-width: 640px) {
+  .reader-shell {
+    padding: 14px;
+  }
+
+  .reader-card {
+    padding: 14px;
+  }
+
+  .reader-page {
+    padding: 14px;
+  }
+
+  .reader-title {
+    font-size: 16px;
+    letter-spacing: 0.18em;
+  }
+
+  .reader-subtitle {
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reader-card,
+  .reader-text {
+    animation: none;
+  }
+}
