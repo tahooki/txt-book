@@ -6,6 +6,7 @@ const MIN_FONT = 16;
 const MAX_FONT = 28;
 const DEFAULT_FONT = 19;
 const STORAGE_KEY = "txt-book-font-size";
+const STORAGE_PAGE_KEY = "txt-book-page-index";
 
 function clampFont(value: number) {
   return Math.min(MAX_FONT, Math.max(MIN_FONT, value));
@@ -18,6 +19,7 @@ export default function Reader({ text }: { text: string }) {
   const pageRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
   const measureRef = useRef<HTMLDivElement>(null);
+  const initialPageRef = useRef<number | null>(null);
 
   const normalized = useMemo(() => {
     return text.replace(/\r\n/g, "\n").trim();
@@ -39,6 +41,20 @@ export default function Reader({ text }: { text: string }) {
   useEffect(() => {
     window.localStorage.setItem(STORAGE_KEY, String(fontSize));
   }, [fontSize]);
+
+  useEffect(() => {
+    const saved = window.localStorage.getItem(STORAGE_PAGE_KEY);
+    if (!saved) return;
+    const parsed = Number.parseInt(saved, 10);
+    if (!Number.isNaN(parsed)) {
+      initialPageRef.current = Math.max(0, parsed);
+      setPageIndex(parsed);
+    }
+  }, []);
+
+  useEffect(() => {
+    window.localStorage.setItem(STORAGE_PAGE_KEY, String(pageIndex));
+  }, [pageIndex]);
 
   const computePages = useCallback(() => {
     const container = contentRef.current;
@@ -82,7 +98,14 @@ export default function Reader({ text }: { text: string }) {
     }
 
     setPages(nextPages);
-    setPageIndex((prev) => Math.min(prev, Math.max(0, nextPages.length - 1)));
+    setPageIndex((prev) => {
+      const target = initialPageRef.current ?? prev;
+      const next = Math.min(Math.max(0, target), nextPages.length - 1);
+      if (initialPageRef.current !== null) {
+        initialPageRef.current = null;
+      }
+      return next;
+    });
   }, [fontSize, tokens]);
 
   useLayoutEffect(() => {
